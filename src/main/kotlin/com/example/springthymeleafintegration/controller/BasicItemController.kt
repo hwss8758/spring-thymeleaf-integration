@@ -5,12 +5,7 @@ import com.example.springthymeleafintegration.repository.ItemRepository
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import javax.annotation.PostConstruct
 
@@ -36,7 +31,10 @@ class BasicItemController(private val itemRepository: ItemRepository) {
     }
 
     @GetMapping("/add")
-    fun addForm(): String = "basic/addForm"
+    fun addForm(model: Model): String {
+        model.addAttribute("item", Item())
+        return "basic/addForm"
+    }
 
     //    @PostMapping("/add")
     fun addItemV1(

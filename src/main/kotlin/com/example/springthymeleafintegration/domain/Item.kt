@@ -1,15 +1,11 @@
 package com.example.springthymeleafintegration.domain
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table
 class Item(
-    var itemName: String,
+    var itemName: String? = null,
     var price: Int? = null,
     var quantity: Int? = null
 ) {
