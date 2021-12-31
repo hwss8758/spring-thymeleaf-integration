@@ -29,6 +29,11 @@ class Item(
 
     var deliveryCode: String? = null
 
+    fun clearAndAddRegions(_regions: List<Region>) {
+        regions.clear()
+        _regions.forEach { addRegion(it) }
+    }
+
     fun addRegion(region: Region) {
         regions.add(region)
         region.item = this

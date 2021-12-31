@@ -70,6 +70,10 @@ class BasicItemController(private val itemRepository: ItemRepository) {
             itemToChange.itemName = item.itemName
             itemToChange.price = item.price
             itemToChange.quantity = item.quantity
+            itemToChange.open = item.open
+            itemToChange.itemType = item.itemType
+            itemToChange.deliveryCode = item.deliveryCode
+            itemToChange.clearAndAddRegions(item.regions)
         }
         return "redirect:/basic/items/{itemId}"
     }
