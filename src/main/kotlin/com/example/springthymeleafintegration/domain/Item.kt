@@ -33,4 +33,8 @@ class Item(
         regions.add(region)
         region.item = this
     }
+
+    constructor(itemName: String?, price: Int?, quantity: Int?, open: Boolean?) : this(itemName, price, quantity) {
+        this.open = open
+    }
 }

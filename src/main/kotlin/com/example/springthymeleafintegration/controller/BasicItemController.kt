@@ -2,6 +2,7 @@ package com.example.springthymeleafintegration.controller
 
 import com.example.springthymeleafintegration.domain.Item
 import com.example.springthymeleafintegration.repository.ItemRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
@@ -13,6 +14,8 @@ import javax.annotation.PostConstruct
 @Controller
 @RequestMapping("/basic/items")
 class BasicItemController(private val itemRepository: ItemRepository) {
+
+    private val logger = KotlinLogging.logger {}
 
     @GetMapping
     fun items(model: Model): String {
@@ -36,56 +39,11 @@ class BasicItemController(private val itemRepository: ItemRepository) {
         return "basic/addForm"
     }
 
-    //    @PostMapping("/add")
-    fun addItemV1(
-        @RequestParam itemName: String,
-        @RequestParam price: Int,
-        @RequestParam quantity: Int,
-        model: Model
-    ): String {
-        val item = Item(itemName, price, quantity)
-        itemRepository.save(item)
-        model.addAttribute("item", item)
-
-        return "basic/item"
-    }
-
-    //    @PostMapping("/add")
-    fun addItemV2(
-        @ModelAttribute("item") item: Item,
-        model: Model
-    ): String {
-        itemRepository.save(item)
-        model.addAttribute("item", item) // ModelAttribute 사용 시 자동 추가, 생략 가능
-        return "basic/item"
-    }
-
-    //    @PostMapping("/add")
-    fun addItemV3(@ModelAttribute("item") item: Item): String {
-        itemRepository.save(item)
-        return "basic/item"
-    }
-
-    //    @PostMapping("/add")
-    fun addItemV4(@ModelAttribute item: Item): String {
-        itemRepository.save(item)
-        return "basic/item"
-    }
-
-    //    @PostMapping("/add")
-    fun addItemV5(item: Item): String {
-        itemRepository.save(item)
-        return "basic/item"
-    }
-
-    //    @PostMapping("/add")
-    fun addItemV6Redirect(item: Item): String {
-        itemRepository.save(item)
-        return "redirect:/basic/items/${item.id}"
-    }
-
     @PostMapping("/add")
     fun addItemV7Redirect(item: Item, redirectAttributes: RedirectAttributes): String {
+
+        logger.info("item.open = ${item.open}")
+
         val savedItem = itemRepository.save(item)
 
         redirectAttributes.addAttribute("itemId", savedItem.id)

@@ -16,3 +16,10 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+logging:
+  level:
+    org:
+      apache:
+        coyote:
+          http11: debug
