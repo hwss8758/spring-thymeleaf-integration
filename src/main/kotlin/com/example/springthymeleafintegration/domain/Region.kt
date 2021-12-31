@@ -16,5 +16,9 @@ class Region(val region: String) {
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    var item: Item? = null
+    var item: ItemEntity? = null
+
+    override fun toString(): String {
+        return "Region(region='$region', id=$id)"
+    }
 }
