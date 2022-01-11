@@ -2,6 +2,7 @@ package com.example.springthymeleafintegration.controller
 
 import com.example.springthymeleafintegration.domain.ItemEntity
 import com.example.springthymeleafintegration.dto.Item
+import com.example.springthymeleafintegration.enumclass.ItemType
 import com.example.springthymeleafintegration.repository.ItemRepository
 import mu.KotlinLogging
 import org.springframework.stereotype.Controller
@@ -30,6 +31,9 @@ class BasicItemController(private val itemRepository: ItemRepository) {
 
         return regions
     }
+
+    @ModelAttribute("itemTypes")
+    fun itemTypes() = ItemType.values()
 
     private val logger = KotlinLogging.logger {}
 
