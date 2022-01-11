@@ -1,6 +1,6 @@
 package com.example.springthymeleafintegration.controller
 
-import com.example.springthymeleafintegration.domain.ItemEntity
+import com.example.springthymeleafintegration.DeliveryCode
 import com.example.springthymeleafintegration.dto.Item
 import com.example.springthymeleafintegration.enumclass.ItemType
 import com.example.springthymeleafintegration.repository.ItemRepository
@@ -34,6 +34,16 @@ class BasicItemController(private val itemRepository: ItemRepository) {
 
     @ModelAttribute("itemTypes")
     fun itemTypes() = ItemType.values()
+
+
+    @ModelAttribute("deliveryCodes")
+    fun deliveryCodes(): List<DeliveryCode> {
+        return listOf<DeliveryCode>(
+            DeliveryCode("FAST", "빠른배송"),
+            DeliveryCode("NORMAL", "일반배송"),
+            DeliveryCode("SLOW", "느린배송")
+        )
+    }
 
     private val logger = KotlinLogging.logger {}
 
