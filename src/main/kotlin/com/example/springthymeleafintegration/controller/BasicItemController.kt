@@ -8,11 +8,8 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.util.StringUtils
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import javax.annotation.PostConstruct
 
@@ -70,9 +67,12 @@ class BasicItemController(private val itemRepository: ItemRepository) {
     }
 
     @PostMapping("/add")
-    fun addItemV7Redirect(item: Item, redirectAttributes: RedirectAttributes): String {
-
-        println("item = ${item}")
+    fun addItemV7Redirect(
+        @ModelAttribute item: Item,
+        redirectAttributes: RedirectAttributes,
+        model: Model
+    ): String {
+        if (validationFields(item, model)) return "basic/addForm"
 
         val savedItem = itemRepository.save(item.toEntity())
 
@@ -80,6 +80,43 @@ class BasicItemController(private val itemRepository: ItemRepository) {
         redirectAttributes.addAttribute("status", true)
 
         return "redirect:/basic/items/{itemId}"
+    }
+
+    private fun validationFields(item: Item, model: Model): Boolean {
+        //검증 오류 결과를 보관
+        val errors = hashMapOf<String, String>()
+
+        //검증로직
+        if (!StringUtils.hasText(item.itemName)) {
+            errors["itemName"] = "상품 이름은 필수입니다."
+        }
+
+        if (item.price == null ||
+            item.price < 1000 ||
+            item.price > 1000000
+        ) {
+            errors["price"] = "가격은 1,000 ~ 1,000,000 까지 허용합니다."
+        }
+
+        if (item.quantity == null || item.quantity >= 9999) {
+            errors["quantity"] = "수량은 최대 9,999 까지 허용합니다."
+        }
+
+        // 특정필드가 아닌 복합필드 검증
+        if (item.price != null && item.quantity != null) {
+            val resultPrice = item.price * item.quantity
+            if (resultPrice < 10000) {
+                errors["globalError"] = "가격 * 수량의 합은 10,000원 이상이어야 합니다. 현재 값 = $resultPrice"
+            }
+        }
+
+        //검증에 실패하면 다시 입력 폼으로
+        if (errors.isNotEmpty()) {
+            model.addAttribute("errors", errors)
+            return true
+        }
+
+        return false
     }
 
     @GetMapping("/{itemId}/edit")
