@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
 import org.springframework.util.StringUtils
+import org.springframework.validation.BindingResult
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import javax.annotation.PostConstruct
@@ -66,7 +69,7 @@ class BasicItemController(private val itemRepository: ItemRepository) {
         return "basic/addForm"
     }
 
-    @PostMapping("/add")
+    //    @PostMapping("/add")
     fun addItemV7Redirect(
         @ModelAttribute item: Item,
         redirectAttributes: RedirectAttributes,
@@ -80,6 +83,51 @@ class BasicItemController(private val itemRepository: ItemRepository) {
         redirectAttributes.addAttribute("status", true)
 
         return "redirect:/basic/items/{itemId}"
+    }
+
+    @PostMapping("/add")
+    fun addItemUsingBindingResult(
+        @ModelAttribute item: Item,
+        bindingResult: BindingResult,
+        redirectAttributes: RedirectAttributes
+    ): String {
+        if (validationUsingBindingResult(item, bindingResult)) return "basic/addForm"
+
+        val savedItem = itemRepository.save(item.toEntity())
+
+        redirectAttributes.addAttribute("itemId", savedItem.id)
+        redirectAttributes.addAttribute("status", true)
+
+        return "redirect:/basic/items/{itemId}"
+    }
+
+    private fun validationUsingBindingResult(item: Item, bindingResult: BindingResult): Boolean {
+        //검증로직
+        if (!StringUtils.hasText(item.itemName)) {
+            bindingResult.addError(FieldError("item", "itemName", "상품 이름은 필수입니다."))
+        }
+
+        if (item.price == null ||
+            item.price < 1000 ||
+            item.price > 1000000
+        ) {
+            bindingResult.addError(FieldError("item", "price", "가격은 1,000 ~ 1,000,000 까지 허용합니다."))
+        }
+
+        if (item.quantity == null || item.quantity >= 9999) {
+            bindingResult.addError(FieldError("item", "quantity", "수량은 최대 9,999 까지 허용합니다."))
+        }
+
+        // 특정필드가 아닌 복합필드 검증
+        if (item.price != null && item.quantity != null) {
+            val resultPrice = item.price * item.quantity
+            if (resultPrice < 10000) {
+                bindingResult.addError(ObjectError("item", "가격 * 수량의 합은 10,000원 이상이어야 합니다. 현재 값 = $resultPrice"))
+            }
+        }
+
+        //검증에 실패하면 다시 입력 폼으로
+        return bindingResult.hasErrors()
     }
 
     private fun validationFields(item: Item, model: Model): Boolean {
