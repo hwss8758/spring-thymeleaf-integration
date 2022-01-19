@@ -16,6 +16,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  messages:
+    basename: messages,errors
 
 #logging:
 #  level:
