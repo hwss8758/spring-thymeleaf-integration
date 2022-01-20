@@ -4,6 +4,7 @@ import com.example.springthymeleafintegration.DeliveryCode
 import com.example.springthymeleafintegration.dto.Item
 import com.example.springthymeleafintegration.enumclass.ItemType
 import com.example.springthymeleafintegration.repository.ItemRepository
+import com.example.springthymeleafintegration.validation.ItemValidator
 import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
@@ -12,14 +13,29 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.BindingResult
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
-import org.springframework.web.bind.annotation.*
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.WebDataBinder
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.InitBinder
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import javax.annotation.PostConstruct
 
 
 @Controller
 @RequestMapping("/basic/items")
-class BasicItemController(private val itemRepository: ItemRepository) {
+class BasicItemController(
+    private val itemRepository: ItemRepository,
+    private val itemValidator: ItemValidator
+) {
+
+    @InitBinder
+    fun init(dataBinder: WebDataBinder) {
+        dataBinder.addValidators(itemValidator)
+    }
 
     @ModelAttribute("regions")
     fun regions(): Map<String, String> {
@@ -85,13 +101,29 @@ class BasicItemController(private val itemRepository: ItemRepository) {
         return "redirect:/basic/items/{itemId}"
     }
 
-    @PostMapping("/add")
+    //    @PostMapping("/add")
     fun addItemUsingBindingResult(
         @ModelAttribute item: Item,
         bindingResult: BindingResult,
         redirectAttributes: RedirectAttributes
     ): String {
         if (validationUsingBindingResultV4(item, bindingResult)) return "basic/addForm"
+
+        val savedItem = itemRepository.save(item.toEntity())
+
+        redirectAttributes.addAttribute("itemId", savedItem.id)
+        redirectAttributes.addAttribute("status", true)
+
+        return "redirect:/basic/items/{itemId}"
+    }
+
+    @PostMapping("/add")
+    fun addItemUsingValidator(
+        @Validated @ModelAttribute item: Item,
+        bindingResult: BindingResult,
+        redirectAttributes: RedirectAttributes
+    ): String {
+        if (bindingResult.hasErrors()) return "basic/addForm"
 
         val savedItem = itemRepository.save(item.toEntity())
 
