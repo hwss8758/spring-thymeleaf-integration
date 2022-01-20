@@ -281,6 +281,8 @@ class BasicItemController(private val itemRepository: ItemRepository) {
             }
         }
 
+        logger.info { bindingResult }
+
         //검증에 실패하면 다시 입력 폼으로
         return bindingResult.hasErrors()
     }
