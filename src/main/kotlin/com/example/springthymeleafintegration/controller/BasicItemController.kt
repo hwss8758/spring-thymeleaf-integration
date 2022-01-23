@@ -123,12 +123,7 @@ class BasicItemController(
     ): String {
 
         // 특정필드가 아닌 복합필드 검증
-        if (item.price != null && item.quantity != null) {
-            val resultPrice = item.price * item.quantity
-            if (resultPrice < 10000) {
-                bindingResult.reject("totalPriceMin", arrayOf(10000, resultPrice), null)
-            }
-        }
+        validateObject(item, bindingResult)
 
         if (bindingResult.hasErrors()) {
             logger.info { bindingResult }
@@ -141,6 +136,17 @@ class BasicItemController(
         redirectAttributes.addAttribute("status", true)
 
         return "redirect:/basic/items/{itemId}"
+    }
+
+    private fun validateObject(
+        item: Item,
+        bindingResult: BindingResult
+    ) {
+        val resultPrice = item.getTotalPrice()
+        if (resultPrice != null && resultPrice < 10000) {
+            bindingResult.reject("totalPriceMin", arrayOf(10000, resultPrice), null)
+        }
+
     }
 
     private fun validationUsingBindingResult(item: Item, bindingResult: BindingResult): Boolean {
@@ -377,7 +383,20 @@ class BasicItemController(
 
     @PostMapping("/{itemId}/edit")
     @Transactional
-    fun editForm(@PathVariable itemId: Long, @ModelAttribute item: Item): String {
+    fun editForm(
+        @PathVariable itemId: Long,
+        @Validated @ModelAttribute item: Item,
+        bindingResult: BindingResult
+    ): String {
+
+        // 특정필드가 아닌 복합필드 검증
+        validateObject(item, bindingResult)
+
+        if (bindingResult.hasErrors()) {
+            logger.info { bindingResult }
+            return "basic/editForm"
+        }
+
         val foundItem = itemRepository.findById(itemId)
         if (foundItem.isPresent) {
             val itemToChange = foundItem.get()

@@ -49,4 +49,6 @@ data class Item(
 
         return itemEntity
     }
+
+    fun getTotalPrice() = quantity?.let { price?.times(it) }
 }
