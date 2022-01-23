@@ -4,7 +4,6 @@ import com.example.springthymeleafintegration.DeliveryCode
 import com.example.springthymeleafintegration.dto.Item
 import com.example.springthymeleafintegration.enumclass.ItemType
 import com.example.springthymeleafintegration.repository.ItemRepository
-import com.example.springthymeleafintegration.validation.ItemValidator
 import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
@@ -14,9 +13,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.WebDataBinder
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.InitBinder
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,14 +25,15 @@ import javax.annotation.PostConstruct
 @Controller
 @RequestMapping("/basic/items")
 class BasicItemController(
-    private val itemRepository: ItemRepository,
-    private val itemValidator: ItemValidator
+    private val itemRepository: ItemRepository
+//    private val itemRepository: ItemRepository,
+//    private val itemValidator: ItemValidator
 ) {
 
-    @InitBinder
-    fun init(dataBinder: WebDataBinder) {
-        dataBinder.addValidators(itemValidator)
-    }
+//    @InitBinder
+//    fun init(dataBinder: WebDataBinder) {
+//        dataBinder.addValidators(itemValidator)
+//    }
 
     @ModelAttribute("regions")
     fun regions(): Map<String, String> {

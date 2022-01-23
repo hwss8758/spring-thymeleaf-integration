@@ -23,12 +23,17 @@ class ItemEntity(
 
     var open: Boolean? = null
 
-    @OneToMany(mappedBy = "item", cascade = [CascadeType.ALL])
-    val regions: MutableList<Region> = mutableListOf()
-
     var itemType: ItemType? = null
 
     var deliveryCode: String? = null
+
+    @OneToMany(mappedBy = "item", cascade = [CascadeType.ALL])
+    val regions: MutableList<Region> = mutableListOf()
+
+
+    constructor(itemName: String?, price: Int?, quantity: Int?, open: Boolean?) : this(itemName, price, quantity) {
+        this.open = open
+    }
 
     fun clearAndAddRegions(_regions: List<Region>) {
         regions.clear()
@@ -42,10 +47,6 @@ class ItemEntity(
 
     override fun toString(): String {
         return "Item(itemName=$itemName, price=$price, quantity=$quantity, id=$id, open=$open, regions=$regions, itemType=$itemType, deliveryCode=$deliveryCode)"
-    }
-
-    constructor(itemName: String?, price: Int?, quantity: Int?, open: Boolean?) : this(itemName, price, quantity) {
-        this.open = open
     }
 
     fun toDto(): Item {
