@@ -9,17 +9,19 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class Item(
+
+    @field:NotNull(groups = [UpdateCheck::class])
     val id: Long? = null,
 
-    @field:NotBlank
+    @field:NotBlank(groups = [UpdateCheck::class, SaveCheck::class])
     val itemName: String? = null,
 
-    @field:NotNull
-    @field:Range(min = 1000, max = 1000000)
+    @field:NotNull(groups = [UpdateCheck::class, SaveCheck::class])
+    @field:Range(min = 1000, max = 1000000, groups = [UpdateCheck::class, SaveCheck::class])
     val price: Int? = null,
 
-    @field:NotNull
-    @field:Max(9999)
+    @field:NotNull(groups = [UpdateCheck::class, SaveCheck::class])
+    @field:Max(9999, groups = [SaveCheck::class])
     val quantity: Int? = null,
 
     val open: Boolean? = null,

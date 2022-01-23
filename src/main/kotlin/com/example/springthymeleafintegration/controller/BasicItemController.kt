@@ -2,6 +2,8 @@ package com.example.springthymeleafintegration.controller
 
 import com.example.springthymeleafintegration.DeliveryCode
 import com.example.springthymeleafintegration.dto.Item
+import com.example.springthymeleafintegration.dto.SaveCheck
+import com.example.springthymeleafintegration.dto.UpdateCheck
 import com.example.springthymeleafintegration.enumclass.ItemType
 import com.example.springthymeleafintegration.repository.ItemRepository
 import mu.KotlinLogging
@@ -35,6 +37,8 @@ class BasicItemController(
 //        dataBinder.addValidators(itemValidator)
 //    }
 
+    private val logger = KotlinLogging.logger {}
+
     @ModelAttribute("regions")
     fun regions(): Map<String, String> {
 
@@ -59,8 +63,6 @@ class BasicItemController(
         )
     }
 
-    private val logger = KotlinLogging.logger {}
-
     @GetMapping
     fun items(model: Model): String {
         val items = itemRepository.findAll()
@@ -84,6 +86,7 @@ class BasicItemController(
     }
 
     //    @PostMapping("/add")
+    @Deprecated("삭제된 함수")
     fun addItemV7Redirect(
         @ModelAttribute item: Item,
         redirectAttributes: RedirectAttributes,
@@ -100,6 +103,7 @@ class BasicItemController(
     }
 
     //    @PostMapping("/add")
+    @Deprecated("삭제된 함수")
     fun addItemUsingBindingResult(
         @ModelAttribute item: Item,
         bindingResult: BindingResult,
@@ -117,7 +121,7 @@ class BasicItemController(
 
     @PostMapping("/add")
     fun addItemUsingValidator(
-        @Validated @ModelAttribute item: Item,
+        @Validated(value = [SaveCheck::class]) @ModelAttribute item: Item,
         bindingResult: BindingResult,
         redirectAttributes: RedirectAttributes
     ): String {
@@ -149,6 +153,7 @@ class BasicItemController(
 
     }
 
+    @Deprecated("삭제된 함수")
     private fun validationUsingBindingResult(item: Item, bindingResult: BindingResult): Boolean {
         //검증로직
         if (!StringUtils.hasText(item.itemName)) {
@@ -178,6 +183,7 @@ class BasicItemController(
         return bindingResult.hasErrors()
     }
 
+    @Deprecated("삭제된 함수")
     private fun validationUsingBindingResultV2(item: Item, bindingResult: BindingResult): Boolean {
         //검증로직
         if (!StringUtils.hasText(item.itemName)) {
@@ -234,6 +240,7 @@ class BasicItemController(
         return bindingResult.hasErrors()
     }
 
+    @Deprecated("삭제된 함수")
     private fun validationUsingBindingResultV3(item: Item, bindingResult: BindingResult): Boolean {
         //검증로직
         if (!StringUtils.hasText(item.itemName)) {
@@ -385,7 +392,7 @@ class BasicItemController(
     @Transactional
     fun editForm(
         @PathVariable itemId: Long,
-        @Validated @ModelAttribute item: Item,
+        @Validated(value = [UpdateCheck::class]) @ModelAttribute item: Item,
         bindingResult: BindingResult
     ): String {
 
