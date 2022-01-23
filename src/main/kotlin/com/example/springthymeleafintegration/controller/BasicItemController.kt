@@ -121,7 +121,19 @@ class BasicItemController(
         bindingResult: BindingResult,
         redirectAttributes: RedirectAttributes
     ): String {
-        if (bindingResult.hasErrors()) return "basic/addForm"
+
+        // 특정필드가 아닌 복합필드 검증
+        if (item.price != null && item.quantity != null) {
+            val resultPrice = item.price * item.quantity
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", arrayOf(10000, resultPrice), null)
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            logger.info { bindingResult }
+            return "basic/addForm"
+        }
 
         val savedItem = itemRepository.save(item.toEntity())
 
