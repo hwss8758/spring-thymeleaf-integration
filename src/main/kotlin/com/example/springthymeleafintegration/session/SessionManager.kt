@@ -1,5 +1,6 @@
 package com.example.springthymeleafintegration.session
 
+import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile
 import org.springframework.stereotype.Component
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -20,6 +21,7 @@ class SessionManager {
      * session create
      */
     fun createSession(value: Any, response: HttpServletResponse) {
+        println("SessionManager.createSession")
         val sessionId = UUID.randomUUID().toString()
         sessionStore[sessionId] = value
 
@@ -28,18 +30,21 @@ class SessionManager {
     }
 
     fun getSession(request: HttpServletRequest): Any? {
+        println("SessionManager.getSession")
         val sessionCookie = findCookie(request, SESSION_COOKIE_NAME)
         return if (sessionCookie == null) null
         else sessionStore[sessionCookie.value]
     }
 
     private fun findCookie(request: HttpServletRequest, cookieName: String): Cookie? {
+        println("SessionManager.findCookie")
         val cookies = request.cookies
         return if (cookies.isEmpty()) null
         else cookies.firstOrNull { cookie -> cookie.name.equals(cookieName) }
     }
 
     fun expire(request: HttpServletRequest) {
+        println("SessionManager.expire")
         val sessionCookie = findCookie(request, SESSION_COOKIE_NAME)
         if (sessionCookie != null) sessionStore.remove(sessionCookie.value)
     }

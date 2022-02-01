@@ -19,6 +19,11 @@ spring:
   messages:
     basename: messages,errors
 
+server:
+  servlet:
+    session:
+      tracking-modes: cookie
+
 #logging:
 #  level:
 #    org:
