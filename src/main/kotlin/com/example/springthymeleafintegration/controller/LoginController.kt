@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -77,7 +78,8 @@ class LoginController(
         return "redirect:/"
     }
 
-    @PostMapping("/login")
+//    @PostMapping("/login")
+    @Deprecated("")
     fun loginV3(
         @Validated @ModelAttribute form: LoginForm,
         bindingResult: BindingResult,
@@ -99,6 +101,31 @@ class LoginController(
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember) // session에 로그인한 회원정보 보관
 
         return "redirect:/"
+    }
+
+    @PostMapping("/login")
+    fun loginV4(
+        @Validated @ModelAttribute form: LoginForm,
+        bindingResult: BindingResult,
+        @RequestParam(defaultValue = "/") redirectURL: String,
+        request: HttpServletRequest
+    ): String {
+
+        if (bindingResult.hasErrors()) return "login/loginForm"
+
+        val loginMember = loginService.login(form.loginId!!, form.password!!)
+
+        logger.info { "login? $loginMember" }
+
+        if (loginMember == null) {
+            bindingResult.reject("loginFail", "id or password 가 맞지 않습니다.")
+            return "login/loginForm"
+        }
+
+        val session = request.session // session이 있으면 session 반환, 없으면 신규 session 생성
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember) // session에 로그인한 회원정보 보관
+
+        return "redirect:${redirectURL}"
     }
 
     private fun setCookie(

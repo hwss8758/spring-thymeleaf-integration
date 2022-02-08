@@ -1,5 +1,6 @@
 package com.example.springthymeleafintegration.config
 
+import com.example.springthymeleafintegration.filter.LoginCheckFilter
 import com.example.springthymeleafintegration.filter.LoginFilter
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
@@ -14,6 +15,15 @@ class WebConfig {
         val filterRegistrationBean: FilterRegistrationBean<Filter> = FilterRegistrationBean<Filter>()
         filterRegistrationBean.filter = LoginFilter()
         filterRegistrationBean.order = 1
+        filterRegistrationBean.addUrlPatterns("/*")
+        return filterRegistrationBean
+    }
+
+    @Bean
+    fun loginCheckFilter(): FilterRegistrationBean<Filter> {
+        val filterRegistrationBean: FilterRegistrationBean<Filter> = FilterRegistrationBean<Filter>()
+        filterRegistrationBean.filter = LoginCheckFilter()
+        filterRegistrationBean.order = 2
         filterRegistrationBean.addUrlPatterns("/*")
         return filterRegistrationBean
     }
