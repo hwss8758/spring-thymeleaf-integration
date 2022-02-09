@@ -5,7 +5,7 @@ import java.util.*
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 
-class LoginFilter : Filter {
+class LogFilter : Filter {
 
     private val logger = KotlinLogging.logger {}
 
