@@ -1,6 +1,7 @@
 package com.example.springthymeleafintegration.controller
 
 import com.example.springthymeleafintegration.SessionConst
+import com.example.springthymeleafintegration.argumentresolver.Login
 import com.example.springthymeleafintegration.domain.Member
 import com.example.springthymeleafintegration.repository.MemberRepository
 import com.example.springthymeleafintegration.session.SessionManager
@@ -69,12 +70,29 @@ class HomeController(
         }
     }
 
-    @GetMapping("/")
+    @Deprecated("")
+//    @GetMapping("/")
     fun homeLoginV4(
         @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) loginMember: Member?,
         model: Model
     ): String {
         println("HomeController.homeLoginV4")
+        return if (loginMember == null) {
+            "home"
+        } else {
+            model.addAttribute("member", loginMember)
+            "loginHome"
+        }
+    }
+
+    @GetMapping("/")
+    fun homeLoginV4ArgumentResolver(
+        @Login loginMember: Member?,
+        model: Model
+    ): String {
+
+        println("HomeController.homeLoginV4ArgumentResolver")
+
         return if (loginMember == null) {
             "home"
         } else {
